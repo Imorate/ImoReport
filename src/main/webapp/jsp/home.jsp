@@ -1,6 +1,3 @@
-<%@ page import="net.datafaker.Faker" %>
-<%@ page import="java.util.Locale" %>
-<%@ page import="java.util.Random" %>
 <%@ page import="ir.imorate.imoreport.Employee" %>
 <%@ page import="java.util.List" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
