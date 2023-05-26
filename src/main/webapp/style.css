@@ -1,0 +1,29 @@
+.report-table {
+    direction: rtl;
+    width: 100%;
+}
+
+table.report-table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+table.report-table td, table.report-table th {
+    font-family: "B Nazanin", "Calibri", serif;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: beige;
+    padding-inline: 10px;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-bold {
+    font-weight: bold;
+}
