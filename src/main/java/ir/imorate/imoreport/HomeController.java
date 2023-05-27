@@ -2,22 +2,19 @@ package ir.imorate.imoreport;
 
 import lombok.AllArgsConstructor;
 import net.datafaker.Faker;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jxls.common.Context;
 import org.jxls.util.JxlsHelper;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 
 @Controller
@@ -52,6 +49,72 @@ public class HomeController {
             throw new RuntimeException(e);
         }
         return "home";
+    }
+
+    @GetMapping("/write-excel")
+    public String writeExcel() {
+        try {
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet("Excel sheet");
+            Object[][] dataTypes = {
+                    {"Datatype", "Type", "Size(in bytes)"},
+                    {"int", "Primitive", 2},
+                    {"float", "Primitive", 4},
+                    {"double", "Primitive", 8},
+                    {"char", "Primitive", 1},
+                    {"String", "Non-Primitive", "No fixed size"}
+            };
+            int rowNum = 0;
+            System.out.println("Creating excel");
+
+            for (Object[] datatype : dataTypes) {
+                Row row = sheet.createRow(rowNum++);
+                int colNum = 0;
+                for (Object field : datatype) {
+                    Cell cell = row.createCell(colNum++);
+                    if (field instanceof String) {
+                        cell.setCellValue((String) field);
+                    } else if (field instanceof Integer) {
+                        cell.setCellValue((Integer) field);
+                    }
+                }
+            }
+
+            try {
+                FileOutputStream outputStream = new FileOutputStream("excel.xlsx");
+                workbook.write(outputStream);
+                workbook.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return "excel";
+    }
+
+    @GetMapping("/read-excel")
+    public String readExcel(){
+        try {
+            FileInputStream excelFile = new FileInputStream("excel.xlsx");
+            Workbook workbook = new XSSFWorkbook(excelFile);
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row currentRow : sheet) {
+                Iterator<Cell> cellIterator = currentRow.cellIterator();
+                while (cellIterator.hasNext()) {
+                    Cell currentCell = cellIterator.next();
+                    if (currentCell.getCellType() == CellType.STRING) {
+                        System.out.print(currentCell.getStringCellValue() + "\t");
+                    } else if (currentCell.getCellType() == CellType.NUMERIC) {
+                        System.out.print(currentCell.getNumericCellValue() + "\t");
+                    }
+                }
+                System.out.println();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return "excel";
     }
 
 }
